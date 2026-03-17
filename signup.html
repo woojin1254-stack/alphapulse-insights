@@ -8,9 +8,9 @@
     <link rel="stylesheet" href="index.css">
 </head>
 <body style="background-color: #fcfcfc;">
-    <div class="auth-container reveal-on-scroll active" style="margin-top: 5vh;">
-        <a href="./index.html" class="logo" style="margin-bottom: 30px;">Pet<span>GPS</span>Ring</a>
-        <h1>시작하기</h1>
+    <div class="auth-container reveal-on-scroll active" style="margin-top: 5vh; animation: fadeIn 0.8s ease-out;">
+        <a href="./index.html" class="logo" style="margin-bottom: 30px; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Pet<span>GPS</span>Ring</a>
+        <h1 style="background: linear-gradient(135deg, var(--dark) 0%, #444 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">시작하기</h1>
         <p>반려동물의 안전을 위한 첫 걸음을 떼어보세요.</p>
 
         <form id="signup-form" class="auth-form">
@@ -154,17 +154,23 @@
 
         async function mockSocialLogin(provider) {
             if (!window.supabaseClient) {
-                alert('현재 대시보드에서 Supabase 연동이 비활성화 상태입니다. (Anon Key 필요)');
+                alert('Supabase 연동이 비활성화 상태입니다. (데모 모드)');
                 return;
             }
+
+            const redirectUrl = window.location.origin + window.location.pathname.replace('signup.html', 'onboarding.html');
+
             const { data, error } = await window.supabaseClient.auth.signInWithOAuth({
                 provider: provider.toLowerCase(),
                 options: {
-                    redirectTo: window.location.origin + '/onboarding.html'
+                    redirectTo: redirectUrl
                 }
             });
             
-            if (error) alert('소셜 로그인 실패: ' + error.message);
+            if (error) {
+                console.error('OAuth Error:', error);
+                alert('소셜 로그인 실패: ' + error.message);
+            }
         }
     </script>
 </body>
