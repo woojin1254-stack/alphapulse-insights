@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>추가 정보 입력 | Pet GPS Ring</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body style="background-color: #fcfcfc;">
+    <div class="auth-container">
+        <a href="index.html" class="logo" style="margin-bottom: 30px;">Pet<span>GPS</span>Ring</a>
+        <h1>마지막 단계입니다!</h1>
+        <p>서비스 이용을 위해 추가 정보를 입력해 주세요.</p>
+
+        <form id="onboarding-form" class="auth-form">
+            <div class="input-group">
+                <label for="nickname">닉네임 *</label>
+                <input type="text" id="nickname" placeholder="멋진닉네임" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="job">직업 *</label>
+                <select id="job" required style="padding: 16px; border-radius: 12px; border: 2px solid var(--border); font-size: 1rem;" onchange="toggleOtherInput('job', 'job-other')">
+                    <option value="">선택해주세요</option>
+                    <option value="학생">학생</option>
+                    <option value="직장인">직장인</option>
+                    <option value="자영업자">자영업자</option>
+                    <option value="연구원">연구원</option>
+                    <option value="기타">기타</option>
+                </select>
+                <input type="text" id="job-other" placeholder="직업을 입력해주세요" style="display:none; margin-top: 8px;">
+            </div>
+
+            <div class="input-group">
+                <label for="purpose">사용 목적 *</label>
+                <select id="purpose" required style="padding: 16px; border-radius: 12px; border: 2px solid var(--border); font-size: 1rem;" onchange="toggleOtherInput('purpose', 'purpose-other')">
+                    <option value="">선택해주세요</option>
+                    <option value="학업">학업</option>
+                    <option value="연구">연구</option>
+                    <option value="크리에이터 컨텐츠 제작">크리에이터 컨텐츠 제작</option>
+                    <option value="반려동물 실시간 위치 추적">반려동물 실시간 위치 추적</option>
+                    <option value="안전 구역 설정 및 알림">안전 구역 설정 및 알림</option>
+                    <option value="기타">기타</option>
+                </select>
+                <input type="text" id="purpose-other" placeholder="사용 목적을 입력해주세요" style="display:none; margin-top: 8px;">
+            </div>
+
+            <button type="submit" class="btn-primary" style="margin-top: 10px;">시작하기</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script>
+        function toggleOtherInput(selectId, otherId) {
+            const select = document.getElementById(selectId);
+            const other = document.getElementById(otherId);
+            if (select.value === '기타') {
+                other.style.display = 'block';
+                other.required = true;
+            } else {
+                other.style.display = 'none';
+                other.required = false;
+            }
+        }
+
+        async function checkSession() {
+            if (!window.supabaseClient) {
+                console.warn('Supabase not available on onboarding. Redirecting...');
+                window.location.href = 'index.html';
+                return;
+            }
+            const { data: { session }, error } = await window.supabaseClient.auth.getSession();
+            if (!session) {
+                window.location.href = 'login.html';
+                return;
+            }
+        }
+        checkSession();
+
+        document.getElementById('onboarding-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!window.supabaseClient) {
+                alert('시스템 오류: 서버 연결이 끊겼습니다.');
+                return;
+            }
+
+            const nickname = document.getElementById('nickname').value;
+            const jobSelect = document.getElementById('job').value;
+            const jobDetail = jobSelect === '기타' ? document.getElementById('job-other').value : jobSelect;
+            const purposeSelect = document.getElementById('purpose').value;
+            const purposeDetail = purposeSelect === '기타' ? document.getElementById('purpose-other').value : purposeSelect;
+
+            try {
+                const { data, error } = await window.supabaseClient.auth.updateUser({
+                    data: {
+                        nickname: nickname,
+                        job: jobSelect,
+                        job_detail: jobDetail,
+                        purpose: purposeSelect,
+                        purpose_detail: purposeDetail,
+                        onboarding_completed: true
+                    }
+                });
+
+                if (error) {
+                    alert('정보 업데이트 실패: ' + error.message);
+                } else {
+                    alert('반갑습니다! 이제 서비스를 이용하실 수 있습니다.');
+                    window.location.href = 'dashboard.html';
+                }
+            } catch (e) {
+                alert('연동 실패: 서버로부터 응답이 없습니다.');
+            }
+        });
+    </script>
+</body>
+</html>

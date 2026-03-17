@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pet GPS Ring | 가장 소중한 친구를 위한 위치 추적 솔루션</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link rel="stylesheet" href="index.css">
+    <meta name="description" content="펫 GPS 링으로 반려동물의 위치를 실시간으로 확인하고 안전 구역을 설정하세요. 절대 길을 잃지 않는 가장 스마트한 방법.">
+</head>
+<body onload="checkSession()">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <header>
+        <nav class="container">
+            <a href="#" class="logo">Pet<span>GPS</span>Ring</a>
+            <ul class="nav-links">
+                <li><a href="#features">기능</a></li>
+                <li><a href="#mafia-offer">혜택</a></li>
+                <li><a href="login.html">로그인</a></li>
+                <li><a href="signup.html" class="btn-primary">사전 예약하기</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero container">
+            <div class="hero-content">
+                <span class="badge">Safe & Smart Pet Life</span>
+                <h1>가장 소중한 친구를<br><span class="accent">절대 잃어버리지 마세요</span></h1>
+                <p>펫 GPS 링은 고정밀 실시간 추적과 지오펜싱 기술로 소중한 반려동물의 안전을 24시간 책임집니다.</p>
+                <form id="hero-signup" class="signup-form">
+                    <input type="email" placeholder="이메일을 입력하고 50% 할인 코드 받기" required>
+                    <button type="button" class="btn-primary" onclick="location.href='signup.html'">지금 신청하기</button>
+                </form>
+                <div class="trust-tags">
+                    <span>✓ 실시간 GPS</span>
+                    <span>✓ 방수 설계</span>
+                    <span>✓ 30일 배터리</span>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="hero.png" alt="Happy dog with GPS ring">
+                <div class="status-card">
+                    <div class="status-info">
+                        <strong>초코</strong> <span class="tag-online">온라인</span>
+                        <p>위치: 서울시 강남구 삼성동 15-2</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="container features">
+            <div class="section-title">
+                <h2>사랑하는 아이를 위한 스마트한 기술</h2>
+                <p>펫 GPS 링이 제공하는 핵심 보안 기능들입니다.</p>
+            </div>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="icon">📍</div>
+                    <h3>초정밀 위치 추적</h3>
+                    <p>도심에서도, 숲 속에서도 오차 범위 1m 내외의 정확한 위치를 실시간으로 보여줍니다.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">🛡️</div>
+                    <h3>안전 구역 설정</h3>
+                    <p>집이나 공원을 안전 구역으로 설정하고, 아이가 구역을 벗어나면 즉시 알림을 보냅니다.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon">⚡</div>
+                    <h3>최저 전력 설계</h3>
+                    <p>한 번 충전으로 최대 30일 동안 사용할 수 있는 탄탄한 배터리 수명을 자랑합니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="mafia-offer" class="offer-section">
+            <div class="container offer-content">
+                <div class="offer-card">
+                    <span class="offer-badge">Early Bird Only</span>
+                    <h2>거절할 수 없는 마피아 오퍼</h2>
+                    <p>런칭 전 사전 예약 리스트에 등록하시는 분들께만 드리는 특별한 혜택입니다.</p>
+                    <div class="benefit-list">
+                        <div class="benefit-item">💰 <strong>50% 할인</strong> 코드 즉시 발급</div>
+                        <div class="benefit-item">🚚 평생 <strong>무료 배송</strong>권</div>
+                        <div class="benefit-item">🎁 전용 가죽 케이스 증정</div>
+                    </div>
+                    <form id="signup" class="signup-box">
+                        <input type="email" placeholder="할인 혜택을 받을 이메일 입력" required>
+                        <button type="submit" class="btn-dark">50% 할인 예약하기</button>
+                    </form>
+                    <p class="timer">남은 혜택 수량: <strong>42개</strong> / 100개 중</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <a href="#" class="logo">Pet<span>GPS</span>Ring</a>
+            <p>&copy; 2026 Pet GPS Ring. 안팀장 화이팅! 🐾</p>
+        </div>
+    </footer>
+
+    <script>
+        async function checkSession() {
+            if (!window.supabaseClient) {
+                console.warn('Supabase client not initialized. Checking mock session only.');
+                checkMockSession();
+                return;
+            }
+
+            try {
+                const { data: { session }, error } = await window.supabaseClient.auth.getSession();
+                if (session) {
+                    const user = session.user;
+                    updateNavForLoggedIn('dashboard.html', '대시보드');
+                } else {
+                    checkMockSession();
+                }
+            } catch (e) {
+                console.error('Session check failed:', e);
+                checkMockSession();
+            }
+        }
+
+        function checkMockSession() {
+            const mockUser = JSON.parse(localStorage.getItem('pet_gps_user'));
+            if (mockUser) {
+                updateNavForLoggedIn('dashboard.html', '대시보드');
+            }
+        }
+
+        function updateNavForLoggedIn(href, text) {
+            const loginLink = document.querySelector('a[href="login.html"]');
+            if (loginLink) {
+                loginLink.href = href;
+                loginLink.textContent = text;
+            }
+        }
+
+        document.querySelectorAll('form').forEach(form => {
+            if (form.id !== 'hero-signup') {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    alert('사전 예약이 접수되었습니다! 50% 할인 코드를 이메일로 보내드렸습니다. (실습용 데모)');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

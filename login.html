@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 | Pet GPS Ring</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body style="background-color: #fcfcfc;">
+    <div class="auth-container">
+        <a href="index.html" class="logo" style="margin-bottom: 30px;">Pet<span>GPS</span>Ring</a>
+        <h1>환영합니다!</h1>
+        <p>로그인하여 소중한 반려동물의 위치를 확인하세요.</p>
+
+        <form id="login-form" class="auth-form">
+            <div class="input-group">
+                <label for="email">이메일</label>
+                <input type="email" id="email" placeholder="example@email.com" required>
+            </div>
+            <div class="input-group">
+                <label for="password">비밀번호</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-primary" style="margin-top: 10px;">로그인</button>
+        </form>
+
+        <div class="auth-divider">또는</div>
+
+        <div class="social-auth">
+            <button class="btn-social" onclick="mockSocialLogin('Google')">
+                <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" alt="Google">
+                Google로 계속하기
+            </button>
+            <button class="btn-primary btn-test" onclick="testLogin()">
+                테스트 계정으로 로그인 (데모)
+            </button>
+        </div>
+
+        <div class="auth-footer">
+            계정이 없으신가요? <a href="signup.html">회원가입</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script>
+        async function mockSocialLogin(provider) {
+            if (!window.supabaseClient) {
+                alert('Supabase 연동이 비활성화 상태입니다. Anon Key를 설정해 주세요.');
+                return;
+            }
+            const { data, error } = await window.supabaseClient.auth.signInWithOAuth({
+                provider: provider.toLowerCase(),
+                options: {
+                    redirectTo: window.location.origin + '/onboarding.html'
+                }
+            });
+            if (error) alert('소셜 로그인 실패: ' + error.message);
+        }
+
+        async function testLogin() {
+            localStorage.setItem('pet_gps_user', JSON.stringify({
+                name: '테스트 유저',
+                email: 'test@example.com',
+                isTest: true
+            }));
+            window.location.href = 'dashboard.html';
+        }
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!window.supabaseClient) {
+                alert('연동된 서버가 없습니다. 테스트 계정 로그인을 이용해 주세요.');
+                return;
+            }
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const { data, error } = await window.supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password,
+                });
+
+                if (error) {
+                    alert('로그인 실패: ' + error.message);
+                } else {
+                    window.location.href = 'dashboard.html';
+                }
+            } catch (e) {
+                alert('로그인 처리 중 오류가 발생했습니다.');
+            }
+        });
+    </script>
+</body>
+</html>

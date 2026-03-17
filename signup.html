@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입 | Pet GPS Ring</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body style="background-color: #fcfcfc;">
+    <div class="auth-container">
+        <a href="index.html" class="logo" style="margin-bottom: 30px;">Pet<span>GPS</span>Ring</a>
+        <h1>시작하기</h1>
+        <p>반려동물의 안전을 위한 첫 걸음을 떼어보세요.</p>
+
+        <form id="signup-form" class="auth-form">
+            <div class="input-group">
+                <label for="email">이메일 *</label>
+                <input type="email" id="email" placeholder="example@email.com" required>
+            </div>
+            <div class="input-group">
+                <label for="nickname">닉네임 *</label>
+                <input type="text" id="nickname" placeholder="멋진닉네임" required>
+            </div>
+            <div class="input-group">
+                <label for="password">비밀번호 *</label>
+                <input type="password" id="password" placeholder="10자리↑, 대문자, 특수문자 포함" required>
+                <small id="password-help" style="font-size: 0.75rem; color: var(--text-muted);">대문자, 특수문자 포함 10자 이상</small>
+            </div>
+            <div class="input-group">
+                <label for="password-confirm">비밀번호 확인 *</label>
+                <input type="password" id="password-confirm" placeholder="비밀번호 재입력" required>
+            </div>
+            
+            <div class="input-group">
+                <label for="job">직업 *</label>
+                <select id="job" required style="padding: 16px; border-radius: 12px; border: 2px solid var(--border); font-size: 1rem;" onchange="toggleOtherInput('job', 'job-other')">
+                    <option value="">선택해주세요</option>
+                    <option value="학생">학생</option>
+                    <option value="직장인">직장인</option>
+                    <option value="자영업자">자영업자</option>
+                    <option value="연구원">연구원</option>
+                    <option value="기타">기타</option>
+                </select>
+                <input type="text" id="job-other" placeholder="직업을 입력해주세요" style="display:none; margin-top: 8px;">
+            </div>
+
+            <div class="input-group">
+                <label for="purpose">사용 목적 *</label>
+                <select id="purpose" required style="padding: 16px; border-radius: 12px; border: 2px solid var(--border); font-size: 1rem;" onchange="toggleOtherInput('purpose', 'purpose-other')">
+                    <option value="">선택해주세요</option>
+                    <option value="학업">학업</option>
+                    <option value="연구">연구</option>
+                    <option value="크리에이터 컨텐츠 제작">크리에이터 컨텐츠 제작</option>
+                    <option value="반려동물 실시간 위치 추적">반려동물 실시간 위치 추적</option>
+                    <option value="안전 구역 설정 및 알림">안전 구역 설정 및 알림</option>
+                    <option value="기타">기타</option>
+                </select>
+                <input type="text" id="purpose-other" placeholder="사용 목적을 입력해주세요" style="display:none; margin-top: 8px;">
+            </div>
+
+            <button type="submit" class="btn-primary" style="margin-top: 10px;">가입하기</button>
+        </form>
+
+        <div class="auth-divider">또는</div>
+
+        <div class="social-auth">
+            <button class="btn-social" onclick="mockSocialLogin('Google')">
+                <img src="https://cdn-icons-png.flaticon.com/512/2991/2991148.png" alt="Google">
+                Google로 시작하기
+            </button>
+        </div>
+
+        <div class="auth-footer">
+            이미 계정이 있으신가요? <a href="login.html">로그인</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script>
+        function toggleOtherInput(selectId, otherId) {
+            const select = document.getElementById(selectId);
+            const other = document.getElementById(otherId);
+            if (select.value === '기타') {
+                other.style.display = 'block';
+                other.required = true;
+            } else {
+                other.style.display = 'none';
+                other.required = false;
+            }
+        }
+
+        function validatePassword(pw) {
+            const hasUpperCase = /[A-Z]/.test(pw);
+            const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(pw);
+            const isLongEnough = pw.length >= 10;
+            return hasUpperCase && hasSpecialChar && isLongEnough;
+        }
+
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!window.supabaseClient) {
+                alert('현재 Supabase 연동이 활성화되지 않았습니다. Anon Key를 확인해 주세요.');
+                return;
+            }
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const passwordConfirm = document.getElementById('password-confirm').value;
+            const nickname = document.getElementById('nickname').value;
+            const jobSelect = document.getElementById('job').value;
+            const jobDetail = jobSelect === '기타' ? document.getElementById('job-other').value : jobSelect;
+            const purposeSelect = document.getElementById('purpose').value;
+            const purposeDetail = purposeSelect === '기타' ? document.getElementById('purpose-other').value : purposeSelect;
+
+            if (!validatePassword(password)) {
+                alert('비밀번호가 정책에 맞지 않습니다. (10자 이상, 대문자 및 특수문자 포함)');
+                return;
+            }
+
+            if (password !== passwordConfirm) {
+                alert('비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+                return;
+            }
+
+            try {
+                const { data, error } = await window.supabaseClient.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            nickname: nickname,
+                            job: jobSelect,
+                            job_detail: jobDetail,
+                            purpose: purposeSelect,
+                            purpose_detail: purposeDetail
+                        }
+                    }
+                });
+
+                if (error) {
+                    alert('회원가입 실패: ' + error.message);
+                } else {
+                    alert('회원가입이 완료되었습니다! 이메일 인증을 확인하거나 로그인해 주세요.');
+                    window.location.href = 'login.html';
+                }
+            } catch (e) {
+                alert('회원가입 처리 중 오류가 발생했습니다.');
+                console.error(e);
+            }
+        });
+
+        async function mockSocialLogin(provider) {
+            if (!window.supabaseClient) {
+                alert('현재 대시보드에서 Supabase 연동이 비활성화 상태입니다. (Anon Key 필요)');
+                return;
+            }
+            const { data, error } = await window.supabaseClient.auth.signInWithOAuth({
+                provider: provider.toLowerCase(),
+                options: {
+                    redirectTo: window.location.origin + '/onboarding.html'
+                }
+            });
+            
+            if (error) alert('소셜 로그인 실패: ' + error.message);
+        }
+    </script>
+</body>
+</html>
