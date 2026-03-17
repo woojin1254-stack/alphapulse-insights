@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="index.css">
 </head>
 <body style="background-color: #fcfcfc;">
-    <div class="auth-container">
-        <a href="index.html" class="logo" style="margin-bottom: 30px;">Pet<span>GPS</span>Ring</a>
+    <div class="auth-container reveal-on-scroll active" style="margin-top: 5vh;">
+        <a href="./index.html" class="logo" style="margin-bottom: 30px;">Pet<span>GPS</span>Ring</a>
         <h1>환영합니다!</h1>
         <p>로그인하여 소중한 반려동물의 위치를 확인하세요.</p>
 
@@ -38,12 +38,12 @@
         </div>
 
         <div class="auth-footer">
-            계정이 없으신가요? <a href="signup.html">회원가입</a>
+            계정이 없으신가요? <a href="./signup.html">회원가입</a>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase-config.js"></script>
+    <script src="./supabase-config.js"></script>
     <script>
         async function mockSocialLogin(provider) {
             if (!window.supabaseClient) {

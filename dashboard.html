@@ -9,11 +9,11 @@
 </head>
 <body>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase-config.js"></script>
+    <script src="./supabase-config.js"></script>
 
     <header class="dashboard-header">
         <nav class="container user-nav">
-            <a href="index.html" class="logo">Pet<span>GPS</span>Ring</a>
+            <a href="./index.html" class="logo">Pet<span>GPS</span>Ring</a>
             <div class="nav-user-info">
                 <div class="user-avatar" id="user-avatar-text">테</div>
                 <span id="user-name">로딩 중...</span>
@@ -63,7 +63,7 @@
                 } else {
                     const user = session.user;
                     if (!user.user_metadata.onboarding_completed) {
-                        window.location.href = 'onboarding.html';
+                        window.location.href = './onboarding.html';
                         return;
                     }
                     document.getElementById('user-name').textContent = user.user_metadata.nickname || user.user_metadata.full_name || user.email;
@@ -118,7 +118,7 @@
             container.innerHTML = pets.map(pet => `
                 <div class="hero" style="padding: 0; background: white; border-radius: 30px; border: 1px solid var(--border); overflow: hidden; margin-bottom: 30px;">
                     <div class="hero-image" style="flex: 2; border-radius: 0;">
-                        <img src="hero.png" alt="Map View" style="border-radius: 0; box-shadow: none;">
+                        <img src="./hero.png" alt="Map View" style="border-radius: 0; box-shadow: none;">
                         <div class="status-card" style="bottom: 20px; left: 20px;">
                             <div class="status-info">
                                 <strong>${pet.name}</strong> <span class="tag-online">${pet.status}</span>
